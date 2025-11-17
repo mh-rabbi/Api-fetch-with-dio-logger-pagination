@@ -31,7 +31,7 @@ class _DoctorListAppState extends State<DoctorListApp> {
 
   final ScrollController _scrollController = ScrollController();
 
-  int? size = 10;
+  int? size = 15;
   int page = 0;
 
   @override
@@ -83,7 +83,7 @@ class _DoctorListAppState extends State<DoctorListApp> {
       // for parsing json data to doctor model
       final Doctors model = Doctors.fromJson(response.data);
 
-      // Extract hasNextPage from response for page load
+      // Extracting hasNextPage from response for page load
       hasNextPage = model.data?.pagination?.hasNext ?? false;
       logger.d('HasNextPage: $hasNextPage, Current Page: $page');
 
@@ -147,7 +147,8 @@ class _DoctorListAppState extends State<DoctorListApp> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Doctor List')),
+      appBar: AppBar(title: Text('Doctor List'), backgroundColor: Colors.grey, centerTitle: true, actions: [
+        IconButton(onPressed: (){}, icon: Icon(Icons.search))]),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
@@ -174,7 +175,6 @@ class _DoctorListAppState extends State<DoctorListApp> {
                               width: 20,
                               child: Image(
                                   image: NetworkImage(doc.profilePic ?? "", scale: 1),
-
                               ),
                             ),
                             title: Text(doc.name ?? 'No Name'),
@@ -184,12 +184,51 @@ class _DoctorListAppState extends State<DoctorListApp> {
                                     doc.specialty!.title != null
                                 ? Text(doc.specialty!.title!)
                                 : null,
+                            onTap: (){
+                              showDialog(context: context, builder: (context) {
+                                return AlertDialog(
+                                  title: Text(doc.name ?? 'No Name'),
+                                  content: SingleChildScrollView(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Image(image: NetworkImage(doc.profilePic ?? "", scale: 1)),
+                                        Text('ID: ${doc.id}'),
+                                        Text('Degrees: ${doc.degrees}'),
+                                        Text('Experience: ${doc.experience}'),
+                                        Text('Working At: ${doc.workingAt}'),
+                                        Text('Fee: ${doc.fee}'),
+                                        Text('Biography: ${doc.biography}'),
+                                        Text('Patient Checked: ${doc.patientChecked}'),
+                                        Text('Followup Fee: ${doc.followupFee}'),
+                                        Text('Followup Day: ${doc.followupDay}'),
+                                        Text('Specialty: ${doc.specialty?.title}'),
+                                        Text('Specialty Name: ${doc.specialty?.name?.en}'),
+                                        Text('Specialty Name: ${doc.specialty?.name?.bn}'),
+                                        // Text('Profile Pic: ${doc.profilePic}'),
+                                      ],
+
+                                    ),
+                                  ),
+                                  actions: [
+                                    TextButton(onPressed: (){
+                                      Navigator.pop(context);
+                                    }, child: Text('Close')),
+                                  ],
+                                  backgroundColor: Colors.grey,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  elevation: 10,
+                                );
+                              } );
+                            },
                           ),
                         );
                       },
                     ),
                   ),
-            isDataLoading == true
+                isDataLoading == true
                 ? Center(child: CircularProgressIndicator())
                 : SizedBox.shrink(),
           ],
